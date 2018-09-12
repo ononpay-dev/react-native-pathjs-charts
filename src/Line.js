@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 
 import React, { Component } from 'react';
 import { Text as ReactText, View, PanResponder } from 'react-native';
-import Svg, { G, Path, Rect, Text, Circle, Line } from 'react-native-svg';
+import Svg, { G, Path, Rect, Text, Circle, Line, Ellipse, Image} from 'react-native-svg';
 import { Colors, Options, cyclic, fontAdapt } from './util';
 import Axis from './Axis';
 import GridAxis from './GridAxis';
@@ -28,7 +28,10 @@ export default class LineChart extends Component {
   constructor(props, chartType) {
     super(props);
     this.chartType = chartType;
-    this.state = { userPressing: false};
+    this.state = { 
+      userPressing: false,
+      selectedDataPoint: ''
+    };
   }
 
   _calcDataPoint(evt) {
@@ -38,15 +41,21 @@ export default class LineChart extends Component {
     posY -= this.props.options.margin.top;
 
     let chartWidth = this.props.options.width;
+    let chartHeight = this.props.options.height;
 
     posX = Math.max(posX, 0);
     posX = Math.min(posX, chartWidth);
+
+    posY = Math.max(posY, 0);
+    posY = Math.min(posY, chartHeight);
     // map the datapoint index with the gesture:
     let curPos = Math.min(posX / chartWidth, 1);
+    let curPosY = Math.min(posY / chartHeight, 1);
 
     // create a 'focus' line
     let curPosX = posX;
     this.curPos = curPos;
+    this.curPosY = curPosY;
     this.setState({curPos});
     this.setState({curPosX});
     this.setState({chartStartY: 0});
@@ -69,7 +78,8 @@ export default class LineChart extends Component {
         this._calcDataPoint(evt)
 
         if (this.props.panHandlerStart) {
-          this.props.panHandlerStart(this.curPos);
+          console.log(this.curPos, this.curPosY)
+          this.props.panHandlerStart(this.curPos, this.curPosY);
         }
       },
 
@@ -77,7 +87,8 @@ export default class LineChart extends Component {
 
         this._calcDataPoint(evt);
         if (this.props.panHandlerMove) {
-          this.props.panHandlerMove(this.curPos);
+          console.log('move')
+          this.props.panHandlerMove(this.curPos, this.curPosY);
         }
       },
 
@@ -85,7 +96,8 @@ export default class LineChart extends Component {
 
         this._calcDataPoint(evt);
         if (this.props.panHandlerEnd) {
-          this.props.panHandlerEnd(this.curPos);
+          console.log('end')
+          this.props.panHandlerEnd(this.curPos, this.curPosY);
         }
 
         this.setState({userPressing: false});
@@ -98,7 +110,7 @@ export default class LineChart extends Component {
 
         this._calcDataPoint(evt);
         if (this.props.panHandlerEnd) {
-          this.props.panHandlerEnd(this.curPos);
+          this.props.panHandlerEnd(this.curPos, this.curPosY);
         }
 
         this.setState({userPressing: false});
@@ -143,7 +155,7 @@ export default class LineChart extends Component {
   }
 
   render() {
-    const noDataMsg = this.props.noDataMessage || 'No data available';
+    const noDataMsg = this.props.noDataMessage || 'Chưa có dữ liệu';
     if (this.props.data === undefined) return <ReactText>{noDataMsg}</ReactText>;
 
     let options = new Options(this.props);
@@ -164,6 +176,7 @@ export default class LineChart extends Component {
       min: options.min,
       max: options.max,
     });
+    console.log(chart)
 
     let chartArea = {
       x: this.getMaxAndMin(chart, this.props.xKey, chart.xscale),
@@ -196,7 +209,8 @@ export default class LineChart extends Component {
           <Path
             key={'lines' + i}
             d={c.line.path.print()}
-            stroke={this.color(i)}
+            // stroke={this.color(i)}
+            stroke={'rgb(208,212,219)'}
             strokeWidth={strokeWidthForCurve}
             strokeOpacity={strokeOpacityForCurve}
             fill="none"
@@ -219,15 +233,95 @@ export default class LineChart extends Component {
     }
     if (this.state.userPressing
       && this.props.options.interaction) {
-      gestureLine = <Line
-        x1={this.state.curPosX}
-        y1={this.state.chartStartY}
-        x2={this.state.curPosX}
-        y2={this.state.chartEndY}
-        stroke={color}
-        strokeWidth={width}
+      gestureLine = 
+       <G>
+       {/* <Image
+            x={70}
+            y={70}
+            width={100}
+            height={100}
+            preserveAspectRatio="xMidYMid slice"
+            // opacity={0.5}
+            href={require('../../../src/assets/ic_clock_blue.png')}
+            clipPath="url(#clip)"
+            backgroundColor='red'
+        /> */}
+        {/* <Ellipse
+          cx={this.state.curPosX - 2.5} cy={this.state.chartStartY - 22}
+          rx="50"
+          ry="13"
+          fill={'rgb(74,173,204)'}
+          clipPath={'url(#clip)'}
+        >
+        </Ellipse> */}
+        {/* //full date */}
+        {/* <Rect
+                    x={this.state.curPosX - 50} 
+                    y={this.state.chartStartY - 30}
+                    width="100"
+                    height="30" 
+                    rx="17" 
+                    ry="17"
+                    fill={'rgb(74,173,204)'}
+                /> */}
 
-      />
+                 <Rect
+                    x={this.state.curPosX - 30} 
+                    y={this.state.chartStartY - 30}
+                    width="60"
+                    height="30" 
+                    rx="17" 
+                    ry="17"
+                    fill={'rgb(74,173,204)'}
+                />
+
+        {/* <Rect
+          cx="70" 
+          cy="70"
+          rx="50"
+          ry="13"
+          width="10" height="80"
+          fill={'rgb(74,173,204)'}
+          clipPath={'url(#clip)'}
+        /> */}
+
+    />
+        {/* {console.log(this.props.dataFinhay[0])}
+        {console.log(this.props.data[0])} */}
+        {/* {console.log(this.props.finhay(String(Math.floor(this.curPos * (this.props.dataFinhay[0].length - 1)))))} */}
+        {/* {console.log(this.props.convert)}
+        {console.log(this.props.dataFinhay[0])} */}
+        {/* {console.log(this.props.dataFinhay[0].findIndex(this.props.convert(String(Math.floor(this.curPos * (this.props.data[0].length - 1))))))} */}
+        {/* {console.log(this.props.convert(String(Math.floor(this.curPos * (this.props.data[0].length - 1)))))} */}
+        {/* {console.log(this.props.dataFinhay[0][0])} */}
+        {/* <Text x={this.state.curPosX - 7.5} y={this.state.chartStartY - 34}  fill={'white'} fontSize={14}>{this.props.convert(String(Math.floor(this.curPos * (this.props.data[0].length - 1)))) == '8' ? 'hohoooo' : 'hihihihihi'}</Text> */}
+        {/* <View x={this.state.curPosX - 20} y={this.state.chartStartY - 10} backgroundColor={'red'}></View> */}
+        {/* <Image
+            x={this.state.curPosX - 60 }
+            cy={80}
+            width={120}
+            height={80}
+            preserveAspectRatio="xMidYMid slice"
+            // opacity={0.5}
+            href={require('../../../src/assets/card_default.png')}
+            clipPath="url(#clip)"
+        /> */}
+        {/* <Text x={this.state.curPosX - 35} y={this.state.chartStartY - 30}  fill={'white'} fontSize={12}>{this.props.convert(String(Math.floor(this.curPos * (this.props.data[0].length - 1)))) == this.props.finhay(String(Math.floor(this.curPos * (this.props.dataFinhay[0].length - 1)))) ? this.props.dataFinhay[0][this.props.convert(String(Math.floor(this.curPos * (this.props.data[0].length - 1))))].record_date : ''}</Text> */}
+        {/* {this.props.showTotalMoney(this.props.convert(String(Math.floor(this.curPos * (this.props.data[0].length - 1)))))} */}
+        {console.log(this.props.dataFinhay[0])}
+        <Text x={this.state.curPosX - 17} y={this.state.chartStartY - 25}  fill={'white'} fontSize={12}>{this.props.convert(String(Math.floor(this.curPos * (this.props.data[0].length - 1)))) == this.props.finhay(String(Math.floor(this.curPos * (this.props.dataFinhay[0].length - 1)))) ? this.props.dataFinhay[0][this.props.convert(String(Math.floor(this.curPos * (this.props.data[0].length - 1))))].record_date.substring(0, 5) : ''}</Text>
+        <Line
+          x1={this.state.curPosX}
+          y1={this.state.chartStartY}
+          // y1={this.state.chartStartY - 10}
+          x2={this.state.curPosX}
+          y2={this.state.chartEndY}
+          stroke={color}
+          strokeWidth={width}
+        />
+        {this.props.showTotalMoney(this.props.convert(String(Math.floor(this.curPos * (this.props.data[0].length - 1)))))}
+        </G>
+      
     }
 
     let areas = null;
@@ -281,7 +375,7 @@ export default class LineChart extends Component {
                 d={c.area.path.print()}
                 fillOpacity={0.5}
                 stroke="none"
-                fill={this.color(i)}
+                fill={'#d0d4db'}
               />
             );
 
@@ -357,13 +451,14 @@ export default class LineChart extends Component {
         }.bind(this)
       );
     }
-
     let returnValue = (
       <View width={options.width} height={options.height} {...this._panResponder.panHandlers}>
         <Svg width={options.width} height={options.height}>
-          <G x={options.margin.left} y={options.margin.top}>
-            <GridAxis key="grid-x" scale={chart.xscale} options={options.axisX} chartArea={chartArea} />
-            <GridAxis key="grid-y" scale={chart.yscale} options={options.axisY} chartArea={chartArea} />
+        
+          <G x={options.margin.left} y={options.margin.right + 25}>
+
+            {/* <GridAxis key="grid-x" scale={chart.xscale} options={options.axisX} chartArea={chartArea} />
+            <GridAxis key="grid-y" scale={chart.yscale} options={options.axisY} chartArea={chartArea} /> */}
             {regions}
             {areas}
             {lines}
