@@ -375,7 +375,8 @@ export default class LineChart extends Component {
                 d={c.area.path.print()}
                 fillOpacity={0.5}
                 stroke="none"
-                fill={'#d0d4db'}
+                // fill={'#d0d4db'}
+                fill={'#ffffff'}
               />
             );
 
