@@ -322,6 +322,8 @@ export default class LineChart extends Component {
         {this.props.showTotalMoney(this.props.convert(String(Math.floor(this.curPos * (this.props.data[0].length - 1)))))}
         </G>
       
+    } else {
+      this.props.showTotalMoney(999999999)
     }
 
     let areas = null;
