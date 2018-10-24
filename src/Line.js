@@ -226,6 +226,22 @@ export default class LineChart extends Component {
     if ( indexLast == maxIndex) {
       positionX =  (indexNow + 1) * ((options.chartWidth + 12)/ maxIndex);
     }
+    let padding = 0;
+
+    if (positionX < 2 * (options.chartWidth + 12) / maxIndex){
+      padding = 10;
+    }
+
+    if (positionX > ((maxIndex - 2) * options.chartWidth + 12) / maxIndex){
+      padding = -10;
+    }
+    if (positionX < (options.chartWidth + 12) / maxIndex){
+      padding = 20;
+    }
+
+    if (positionX > ((maxIndex) * options.chartWidth + 12) / maxIndex){
+      padding = -20;
+    }
     // gesture line here
     let gestureLine = null;
     let color = 'white';
@@ -272,7 +288,7 @@ export default class LineChart extends Component {
                 /> */}
 
                  <Rect
-                    x={positionX - 30} 
+                    x={positionX - 30 + padding} 
                     y={this.state.chartStartY - 30}
                     width="60"
                     height="30" 
@@ -315,7 +331,7 @@ export default class LineChart extends Component {
         {/* <Text x={this.state.curPosX - 35} y={this.state.chartStartY - 30}  fill={'white'} fontSize={12}>{this.props.convert(String(Math.floor(this.curPos * (this.props.data[0].length - 1)))) == this.props.finhay(String(Math.floor(this.curPos * (this.props.dataFinhay[0].length - 1)))) ? this.props.dataFinhay[0][this.props.convert(String(Math.floor(this.curPos * (this.props.data[0].length - 1))))].record_date : ''}</Text> */}
         {/* {this.props.showTotalMoney(this.props.convert(String(Math.floor(this.curPos * (this.props.data[0].length - 1)))))} */}
         {console.log(this.props.dataFinhay[0])}
-        <Text x={positionX - 17} y={this.state.chartStartY - 25}  fill={'white'} fontSize={12}>{this.props.convert(String(Math.floor(this.curPos * (this.props.data[0].length - 1)))) == this.props.finhay(String(Math.floor(this.curPos * (this.props.dataFinhay[0].length - 1)))) ? this.props.dataFinhay[0][this.props.convert(String(Math.floor(this.curPos * (this.props.data[0].length - 1))))].record_date.substring(0, 5) : ''}</Text>
+        <Text x={positionX - 17 + padding} y={this.state.chartStartY - 25}  fill={'white'} fontSize={12}>{this.props.convert(String(Math.floor(this.curPos * (this.props.data[0].length - 1)))) == this.props.finhay(String(Math.floor(this.curPos * (this.props.dataFinhay[0].length - 1)))) ? this.props.dataFinhay[0][this.props.convert(String(Math.floor(this.curPos * (this.props.data[0].length - 1))))].record_date.substring(0, 5) : ''}</Text>
         <Line
           x1={positionX}
           y1={this.state.chartStartY}
