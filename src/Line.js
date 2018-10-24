@@ -331,7 +331,7 @@ export default class LineChart extends Component {
         {/* <Text x={this.state.curPosX - 35} y={this.state.chartStartY - 30}  fill={'white'} fontSize={12}>{this.props.convert(String(Math.floor(this.curPos * (this.props.data[0].length - 1)))) == this.props.finhay(String(Math.floor(this.curPos * (this.props.dataFinhay[0].length - 1)))) ? this.props.dataFinhay[0][this.props.convert(String(Math.floor(this.curPos * (this.props.data[0].length - 1))))].record_date : ''}</Text> */}
         {/* {this.props.showTotalMoney(this.props.convert(String(Math.floor(this.curPos * (this.props.data[0].length - 1)))))} */}
         {console.log(this.props.dataFinhay[0])}
-        <Text x={positionX - 17 + padding} y={this.state.chartStartY - 25}  fill={'white'} fontSize={12}>{this.props.convert(String(Math.floor(this.curPos * (this.props.data[0].length - 1)))) == this.props.finhay(String(Math.floor(this.curPos * (this.props.dataFinhay[0].length - 1)))) ? this.props.dataFinhay[0][this.props.convert(String(Math.floor(this.curPos * (this.props.data[0].length - 1))))].record_date.substring(0, 5) : ''}</Text>
+        <Text x={positionX - 17 + padding} y={this.state.chartStartY - 25}  fill={'white'} fontSize={12}>{this.props.convert(String(Math.floor(this.curPos * (this.props.data[0].length - 1)))) == this.props.finhay(String(Math.floor(this.curPos * (this.props.dataFinhay[0].length - 1)))) ? this.props.dataFinhay[0][this.props.convert(String(Math.floor(this.curPos * (this.props.data[0].length - 1))))].record_date.substring(0, 5).replace('-', '/') : ''}</Text>
         <Line
           x1={positionX}
           y1={this.state.chartStartY}
