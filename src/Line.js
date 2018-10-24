@@ -219,8 +219,13 @@ export default class LineChart extends Component {
         );
       }.bind(this)
     );
-    let positionX = Number.parseInt(this.state.curPosX / ((options.chartWidth + 12) / this.props.dataFinhay[0].length)) * ((options.chartWidth + 12)/ this.props.dataFinhay[0].length)
-
+    const maxIndex = this.props.dataFinhay[0].length
+    const indexNow = Number.parseInt(this.state.curPosX / ((options.chartWidth + 12) / maxIndex));
+    const indexLast = Number.parseInt(this.state.curPosX / (options.chartWidth / maxIndex));
+    let positionX = indexNow * ((options.chartWidth + 12) / maxIndex);
+    if ( indexLast == maxIndex) {
+      positionX =  (indexNow + 1) * ((options.chartWidth + 12)/ maxIndex);
+    }
     // gesture line here
     let gestureLine = null;
     let color = 'white';
