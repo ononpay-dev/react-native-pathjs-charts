@@ -17,7 +17,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 
 import React, { Component } from 'react';
-import { Text as ReactText, View, PanResponder } from 'react-native';
+import { Text as ReactText, View, PanResponder, Platform } from 'react-native';
 import Svg, { G, Path, Rect, Text, Circle, Line, Ellipse, Image} from 'react-native-svg';
 import { Colors, Options, cyclic, fontAdapt } from './util';
 import Axis from './Axis';
@@ -240,7 +240,7 @@ export default class LineChart extends Component {
     }
 
     if (positionX > ((maxIndex) * options.chartWidth + 12) / maxIndex){
-      padding = -20;
+      padding = -21;
     }
     // gesture line here
     let gestureLine = null;
@@ -289,11 +289,11 @@ export default class LineChart extends Component {
 
                  <Rect
                     x={positionX - 30 + padding} 
-                    y={this.state.chartStartY - 30}
+                    y={this.state.chartStartY - 42}
                     width="60"
-                    height="30" 
-                    rx="17" 
-                    ry="17"
+                    height="27" 
+                    rx="14" 
+                    ry="14"
                     fill={'rgb(74,173,204)'}
                 />
 
@@ -331,10 +331,10 @@ export default class LineChart extends Component {
         {/* <Text x={this.state.curPosX - 35} y={this.state.chartStartY - 30}  fill={'white'} fontSize={12}>{this.props.convert(String(Math.floor(this.curPos * (this.props.data[0].length - 1)))) == this.props.finhay(String(Math.floor(this.curPos * (this.props.dataFinhay[0].length - 1)))) ? this.props.dataFinhay[0][this.props.convert(String(Math.floor(this.curPos * (this.props.data[0].length - 1))))].record_date : ''}</Text> */}
         {/* {this.props.showTotalMoney(this.props.convert(String(Math.floor(this.curPos * (this.props.data[0].length - 1)))))} */}
         {console.log(this.props.dataFinhay[0])}
-        <Text x={positionX - 17 + padding} y={this.state.chartStartY - 25}  fill={'white'} fontSize={12}>{this.props.convert(String(Math.floor(this.curPos * (this.props.data[0].length - 1)))) == this.props.finhay(String(Math.floor(this.curPos * (this.props.dataFinhay[0].length - 1)))) ? this.props.dataFinhay[0][this.props.convert(String(Math.floor(this.curPos * (this.props.data[0].length - 1))))].record_date.substring(0, 5).replace('-', '/') : ''}</Text>
+        <Text x={positionX - 19 + padding} y={this.state.chartStartY - (Platform.OS == 'ios' ? 39 : 37)}  fill={'white'} fontSize={15}>{this.props.convert(String(Math.floor(this.curPos * (this.props.data[0].length - 1)))) == this.props.finhay(String(Math.floor(this.curPos * (this.props.dataFinhay[0].length - 1)))) ? this.props.dataFinhay[0][this.props.convert(String(Math.floor(this.curPos * (this.props.data[0].length - 1))))].record_date.substring(0, 5).replace('-', '/') : ''}</Text>
         <Line
           x1={positionX}
-          y1={this.state.chartStartY}
+          y1={this.state.chartStartY - 15}
           // y1={this.state.chartStartY - 10}
           x2={positionX}
           y2={this.state.chartEndY}
@@ -367,14 +367,14 @@ export default class LineChart extends Component {
                   (typeof showPoints === 'boolean' && showPoints)
                 ) {
                   return (
-                    <G key={'k' + pointIndex} x={p[0]} y={p[1]}>
+                    Number.parseInt(p[0]) == Number.parseInt(positionX) && gestureLine && <G key={'k' + pointIndex} x={p[0]} y={p[1]}>
                       {typeof this.props.options.renderPoint === 'function'
                         ? this.props.options.renderPoint(graphIndex, pointIndex)
                         : <Circle
                             fill={this.color(graphIndex)}
                             cx={0}
                             cy={0}
-                            r={this.props.options.pointRadius || 5}
+                            r={this.props.options.pointRadius || 3.5}
                             fillOpacity={1}
                           />}
                     </G>
@@ -479,7 +479,7 @@ export default class LineChart extends Component {
       <View width={options.width} height={options.height} {...this._panResponder.panHandlers}>
         <Svg width={options.width} height={options.height}>
         
-          <G x={options.margin.left} y={options.margin.right + 25}>
+          <G x={options.margin.left} y={options.margin.right + 35}>
 
             {/* <GridAxis key="grid-x" scale={chart.xscale} options={options.axisX} chartArea={chartArea} />
             <GridAxis key="grid-y" scale={chart.yscale} options={options.axisY} chartArea={chartArea} /> */}
