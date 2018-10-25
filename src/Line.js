@@ -23,13 +23,13 @@ import { Colors, Options, cyclic, fontAdapt } from './util';
 import Axis from './Axis';
 import GridAxis from './GridAxis';
 import _ from 'lodash';
-
+let points = null;
 export default class LineChart extends Component {
   constructor(props, chartType) {
     super(props);
     this.chartType = chartType;
     this.state = { 
-      userPressing: false,
+      userMoving: false,
       selectedDataPoint: ''
     };
   }
@@ -64,6 +64,7 @@ export default class LineChart extends Component {
 
   componentWillMount() {
     this._panResponder = {};
+    points = null;
     if (!this.props.options.interaction) {return;}
     this._panResponder = PanResponder.create({
       // Ask to be the responder:
@@ -86,6 +87,7 @@ export default class LineChart extends Component {
       onPanResponderMove: (evt, gestureState) => {
 
         this._calcDataPoint(evt);
+
         if (this.props.panHandlerMove) {
           console.log('move')
           this.props.panHandlerMove(this.curPos, this.curPosY);
@@ -99,6 +101,7 @@ export default class LineChart extends Component {
           console.log('end')
           this.props.panHandlerEnd(this.curPos, this.curPosY);
         }
+        
 
         this.setState({userPressing: false});
       },
@@ -244,6 +247,7 @@ export default class LineChart extends Component {
     }
     // gesture line here
     let gestureLine = null;
+
     let color = 'white';
     let width = 1;
     if (this.props.options.cursorLine ) {
@@ -337,7 +341,7 @@ export default class LineChart extends Component {
           y1={this.state.chartStartY - 15}
           // y1={this.state.chartStartY - 10}
           x2={positionX}
-          y2={this.state.chartEndY}
+          y2={this.state.chartEndY + 15}
           stroke={color}
           strokeWidth={width}
         />
@@ -347,13 +351,12 @@ export default class LineChart extends Component {
     } else {
       this.props.showTotalMoney(999999999)
     }
-
     let areas = null;
 
     let showPoints = typeof this.props.options.showPoints !== 'undefined'
       ? this.props.options.showPoints
       : false;
-    let points = !showPoints
+    let pointCurrent = !showPoints
       ? []
       : _.map(
           chart.curves,
@@ -371,7 +374,7 @@ export default class LineChart extends Component {
                       {typeof this.props.options.renderPoint === 'function'
                         ? this.props.options.renderPoint(graphIndex, pointIndex)
                         : <Circle
-                            fill={this.color(graphIndex)}
+                            fill={'#4AADCD'}
                             cx={0}
                             cy={0}
                             r={this.props.options.pointRadius || 3.5}
@@ -384,6 +387,31 @@ export default class LineChart extends Component {
             );
           }.bind(this)
         );
+
+        if(!points) 
+          points = _.map(
+            chart.curves,
+            function(c, graphIndex) {
+              return _.map(
+                c.line.path.points(),
+                function(p, pointIndex) {
+                  let render = null;
+                  
+                    return (
+                      <G key={'k' + pointIndex} x={p[0]+0.3} y={options.height - 48}>
+                        <Circle
+                              fill={'#EEEEEE'}
+                              cx={0}
+                              cy={0}
+                              r={this.props.options.pointRadius || 2.5}
+                              fillOpacity={1}
+                            />
+                      </G>
+                    );
+                }.bind(this)
+              );
+            }.bind(this)
+          );
 
     if (showAreas) {
       areas = _.map(
@@ -488,6 +516,7 @@ export default class LineChart extends Component {
             {lines}
             {points}
             {gestureLine}
+            {pointCurrent}
             <Axis key="axis-x" scale={chart.xscale} options={options.axisX} chartArea={chartArea} />
             <Axis key="axis-y" scale={chart.yscale} options={options.axisY} chartArea={chartArea} />
           </G>
