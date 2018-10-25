@@ -222,12 +222,12 @@ export default class LineChart extends Component {
         );
       }.bind(this)
     );
-    const maxIndex = this.props.dataFinhay[0].length
+    const maxIndex = this.props.dataFinhay[0].length;
     const indexNow = Number.parseInt(this.state.curPosX / ((options.chartWidth + 12) / maxIndex));
     const indexLast = Number.parseInt(this.state.curPosX / (options.chartWidth / maxIndex));
-    let positionX = indexNow * ((options.chartWidth + 12) / maxIndex);
-    if ( indexLast == maxIndex) {
-      positionX =  (indexNow + 1) * ((options.chartWidth + 12)/ maxIndex);
+    let positionX = indexNow * ((options.chartWidth + (this.props.options.width < 320 ? 10 : 12)) / maxIndex);
+    if ( this.state.curPosX == options.chartWidth) {
+      positionX =  options.chartWidth;
     }
     let padding = 0;
 
@@ -242,7 +242,7 @@ export default class LineChart extends Component {
       padding = 20;
     }
 
-    if (positionX > ((maxIndex) * options.chartWidth + 12) / maxIndex){
+    if (positionX >= options.chartWidth){
       padding = -21;
     }
     // gesture line here
@@ -370,7 +370,7 @@ export default class LineChart extends Component {
                   (typeof showPoints === 'boolean' && showPoints)
                 ) {
                   return (
-                    Number.parseInt(p[0]) == Number.parseInt(positionX) && gestureLine && <G key={'k' + pointIndex} x={p[0]} y={p[1]}>
+                    Math.abs(Number.parseInt(p[0]) - Number.parseInt(positionX)) < 4 && gestureLine && <G key={'k' + pointIndex} x={positionX} y={p[1]}>
                       {typeof this.props.options.renderPoint === 'function'
                         ? this.props.options.renderPoint(graphIndex, pointIndex)
                         : <Circle
@@ -398,7 +398,7 @@ export default class LineChart extends Component {
                   let render = null;
                   
                     return (
-                      <G key={'k' + pointIndex} x={p[0]+0.3} y={options.height - 48}>
+                      <G key={'k' + pointIndex} x={p[0]} y={this.props.options.height + 15}>
                         <Circle
                               fill={'#EEEEEE'}
                               cx={0}
@@ -514,8 +514,9 @@ export default class LineChart extends Component {
             {regions}
             {areas}
             {lines}
-            {points}
             {gestureLine}
+            {points}
+
             {pointCurrent}
             <Axis key="axis-x" scale={chart.xscale} options={options.axisX} chartArea={chartArea} />
             <Axis key="axis-y" scale={chart.yscale} options={options.axisY} chartArea={chartArea} />
